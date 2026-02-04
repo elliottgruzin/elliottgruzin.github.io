@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>elliott gruzin</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%23F0EAD6' width='32' height='32'/%3E%3Cline x1='8' y1='8' x2='16' y2='16' stroke='%23888' stroke-width='1.5'/%3E%3Cline x1='8' y1='24' x2='16' y2='16' stroke='%23888' stroke-width='1.5'/%3E%3Cline x1='16' y1='16' x2='24' y2='10' stroke='%23888' stroke-width='1.5'/%3E%3Cline x1='16' y1='16' x2='24' y2='22' stroke='%23888' stroke-width='1.5'/%3E%3Ccircle cx='8' cy='8' r='3' fill='%23666'/%3E%3Ccircle cx='8' cy='24' r='3' fill='%23666'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%23555'/%3E%3Ccircle cx='24' cy='10' r='3' fill='%23666'/%3E%3Ccircle cx='24' cy='22' r='3' fill='%23666'/%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -25,28 +26,70 @@
         }
 
         .container {
+            display: flex;
+            align-items: center;
+            gap: 5rem;
+        }
+
+        .neural-net {
+            width: 140px;
+            height: 220px;
+            flex-shrink: 0;
+        }
+
+        .neural-net line {
+            stroke: #888;
+            stroke-width: 1;
+            opacity: 0.3;
+        }
+
+        .neural-net circle {
+            fill: #666;
+        }
+
+        .layer-1 circle { animation: pulse 2s ease-in-out infinite; }
+        .layer-2 circle { animation: pulse 2s ease-in-out infinite 0.5s; }
+        .layer-3 circle { animation: pulse 2s ease-in-out infinite 1s; }
+        .layer-4 circle { animation: pulse 2s ease-in-out infinite 1.5s; }
+
+        .layer-1 circle { opacity: 0.3; }
+        .layer-2 circle { opacity: 0.3; }
+        .layer-3 circle { opacity: 0.3; }
+        .layer-4 circle { opacity: 0.3; }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.3;
+                filter: none;
+            }
+            50% {
+                opacity: 1;
+                filter: drop-shadow(0 0 4px rgba(80, 80, 80, 0.5));
+            }
+        }
+
+        .content {
             line-height: 2;
             font-size: 1.1rem;
+            width: 320px;
         }
 
         .line {
             display: block;
-            margin-bottom: 0.5em;
+            margin-bottom: 0.3em;
         }
 
-        .indent-0 { margin-left: 0; }
-        .indent-1 { margin-left: 2rem; }
-        .indent-2 { margin-left: 4rem; }
-        .indent-3 { margin-left: 1rem; }
-        .indent-4 { margin-left: 3rem; }
+        .left { text-align: left; }
+        .center { text-align: center; }
+        .right { text-align: right; }
 
         .name {
-            font-size: 1.4rem;
-            margin-bottom: 1.5em;
+            font-size: 1.5rem;
+            margin-bottom: 1em;
         }
 
         .spacer {
-            height: 1.5em;
+            height: 1.2em;
         }
 
         a {
@@ -60,34 +103,502 @@
             text-decoration: underline;
         }
 
+        /* Collapsible section */
+        .expand-toggle {
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s ease;
+            user-select: none;
+        }
+
+        .expand-toggle:hover {
+            color: #555;
+        }
+
+        .expandable {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .expandable.open {
+            max-height: 1200px;
+            opacity: 1;
+        }
+
+        .expandable-content {
+            padding: 1.5em 0;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            color: #555;
+            border-left: 2px solid #ccc;
+            padding-left: 1em;
+            margin: 1em 0;
+        }
+
+        .expandable-content p {
+            margin-bottom: 1em;
+        }
+
+        .expandable-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .collapse-toggle {
+            cursor: pointer;
+            color: #888;
+            transition: color 0.2s ease;
+            user-select: none;
+            display: block;
+            margin-top: 0.5em;
+        }
+
+        .collapse-toggle:hover {
+            color: #555;
+        }
+
+        /* 1-bit Mac-style book */
+        .book-trigger {
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+            transition: transform 0.1s;
+        }
+
+        .book-trigger:hover {
+            transform: scale(1.05);
+        }
+
+        .book-trigger:active {
+            transform: scale(0.95);
+        }
+
+        .book-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .book-modal.open {
+            display: flex;
+        }
+
+        .book-window {
+            background: #fff;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #000;
+            width: 340px;
+            max-width: 90vw;
+            font-family: 'Geneva', 'Chicago', system-ui, sans-serif;
+            image-rendering: pixelated;
+        }
+
+        .book-titlebar {
+            background: #fff;
+            border-bottom: 2px solid #000;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: default;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 1px,
+                #000 1px,
+                #000 2px
+            );
+            background-size: 100% 4px;
+        }
+
+        .book-close {
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border: 2px solid #000;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .book-close:active {
+            background: #000;
+        }
+
+        .book-title {
+            background: #fff;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .book-content {
+            padding: 24px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-transform: none;
+        }
+
+        .book-page-num {
+            font-size: 11px;
+            color: #000;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .book-entry-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #000;
+        }
+
+        .book-entry-author {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        .book-entry-thought {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            border-top: 1px dashed #000;
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .book-nav {
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid #000;
+            background: #fff;
+        }
+
+        .book-nav button {
+            flex: 1;
+            padding: 12px;
+            background: #fff;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.1s;
+        }
+
+        .book-nav button:hover {
+            background: #eee;
+        }
+
+        .book-nav button:active {
+            background: #000;
+            color: #fff;
+        }
+
+        .book-nav button:first-child {
+            border-right: 1px solid #000;
+        }
+
+        .book-nav button:last-child {
+            border-left: 1px solid #000;
+        }
+
+        .book-nav button:disabled {
+            color: #aaa;
+            cursor: default;
+        }
+
+        .book-nav button:disabled:hover {
+            background: #fff;
+        }
+
+        .book-nav button:disabled:active {
+            background: #fff;
+            color: #aaa;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 1.5rem;
             }
 
-            .indent-1 { margin-left: 1rem; }
-            .indent-2 { margin-left: 2rem; }
-            .indent-3 { margin-left: 0.5rem; }
-            .indent-4 { margin-left: 1.5rem; }
+            .container {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .neural-net {
+                width: 180px;
+                height: 80px;
+            }
+
+            .content {
+                width: 100%;
+                max-width: 320px;
+                text-align: center;
+            }
+
+            .left, .center, .right {
+                text-align: center;
+            }
+
+            .expandable-content {
+                border-left: none;
+                border-top: 2px solid #ccc;
+                padding-left: 0;
+                padding-top: 1em;
+                text-align: left;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <span class="line name indent-0">elliott gruzin</span>
+        <svg class="neural-net" viewBox="0 0 120 200">
+            <!-- connections layer 1 to 2 -->
+            <line x1="20" y1="40" x2="50" y2="25"/>
+            <line x1="20" y1="40" x2="50" y2="65"/>
+            <line x1="20" y1="40" x2="50" y2="105"/>
+            <line x1="20" y1="40" x2="50" y2="145"/>
+            <line x1="20" y1="100" x2="50" y2="25"/>
+            <line x1="20" y1="100" x2="50" y2="65"/>
+            <line x1="20" y1="100" x2="50" y2="105"/>
+            <line x1="20" y1="100" x2="50" y2="145"/>
+            <line x1="20" y1="160" x2="50" y2="25"/>
+            <line x1="20" y1="160" x2="50" y2="65"/>
+            <line x1="20" y1="160" x2="50" y2="105"/>
+            <line x1="20" y1="160" x2="50" y2="145"/>
 
-        <div class="spacer"></div>
+            <!-- connections layer 2 to 3 -->
+            <line x1="50" y1="25" x2="80" y2="25"/>
+            <line x1="50" y1="25" x2="80" y2="65"/>
+            <line x1="50" y1="25" x2="80" y2="105"/>
+            <line x1="50" y1="25" x2="80" y2="145"/>
+            <line x1="50" y1="65" x2="80" y2="25"/>
+            <line x1="50" y1="65" x2="80" y2="65"/>
+            <line x1="50" y1="65" x2="80" y2="105"/>
+            <line x1="50" y1="65" x2="80" y2="145"/>
+            <line x1="50" y1="105" x2="80" y2="25"/>
+            <line x1="50" y1="105" x2="80" y2="65"/>
+            <line x1="50" y1="105" x2="80" y2="105"/>
+            <line x1="50" y1="105" x2="80" y2="145"/>
+            <line x1="50" y1="145" x2="80" y2="25"/>
+            <line x1="50" y1="145" x2="80" y2="65"/>
+            <line x1="50" y1="145" x2="80" y2="105"/>
+            <line x1="50" y1="145" x2="80" y2="145"/>
 
-        <span class="line indent-2">data scientist</span>
-        <span class="line indent-1">london</span>
+            <!-- connections layer 3 to 4 -->
+            <line x1="80" y1="25" x2="110" y2="70"/>
+            <line x1="80" y1="25" x2="110" y2="130"/>
+            <line x1="80" y1="65" x2="110" y2="70"/>
+            <line x1="80" y1="65" x2="110" y2="130"/>
+            <line x1="80" y1="105" x2="110" y2="70"/>
+            <line x1="80" y1="105" x2="110" y2="130"/>
+            <line x1="80" y1="145" x2="110" y2="70"/>
+            <line x1="80" y1="145" x2="110" y2="130"/>
 
-        <div class="spacer"></div>
+            <!-- layer 1: input (3 nodes) -->
+            <g class="layer-1">
+                <circle cx="20" cy="40" r="6"/>
+                <circle cx="20" cy="100" r="6"/>
+                <circle cx="20" cy="160" r="6"/>
+            </g>
 
-        <span class="line indent-3"><a href="mailto:elliottgruzin@gmail.com">email</a></span>
-        <span class="line indent-4"><a href="https://linkedin.com/in/elliott-gruzin">linkedin</a></span>
-        <span class="line indent-1"><a href="https://github.com/elliottgruzin">github</a></span>
+            <!-- layer 2: hidden1 (4 nodes) -->
+            <g class="layer-2">
+                <circle cx="50" cy="25" r="6"/>
+                <circle cx="50" cy="65" r="6"/>
+                <circle cx="50" cy="105" r="6"/>
+                <circle cx="50" cy="145" r="6"/>
+            </g>
+
+            <!-- layer 3: hidden2 (4 nodes) -->
+            <g class="layer-3">
+                <circle cx="80" cy="25" r="6"/>
+                <circle cx="80" cy="65" r="6"/>
+                <circle cx="80" cy="105" r="6"/>
+                <circle cx="80" cy="145" r="6"/>
+            </g>
+
+            <!-- layer 4: output (2 nodes) -->
+            <g class="layer-4">
+                <circle cx="110" cy="70" r="6"/>
+                <circle cx="110" cy="130" r="6"/>
+            </g>
+        </svg>
+
+        <div class="content">
+            <span class="line name left">elliott gruzin</span>
+
+            <div class="spacer"></div>
+
+            <span class="line center">member of technical staff</span>
+            <span class="line center">at <a href="https://tomoro.ai">tomoro.ai</a></span>
+            <span class="line right">i live and work in london</span>
+
+            <div class="spacer"></div>
+
+            <span class="line left expand-toggle" id="expandBtn">info about what i do (potentially boring)</span>
+
+            <div class="expandable" id="expandable">
+                <div class="expandable-content">
+                    <p>my work involves getting ai deployed and used in real applications.</p>
+                    <p>i currently work at tomoro.ai as a member of technical staff.</p>
+                    <p>we make really cool stuff there, and we're all pretty nice. contact me if think you'd be a good fit.</p>
+                    <p>most of my experience before tomoro was in building other sorts of chatbots (a lot more manually)</p>
+                    <p>fine-tuning, productionization, monitoring. lots of homebrewed evaluation metrics and building pipelines to maximise those metrics.</p>
+                    <p>now i do stuff that's pretty similar but much more architectural. i don't manage people, but i feel like i manage llms.</p>
+                    <p>before all that stuff in headier days, i studied philosophy and economics at edinburgh, then did an msc in speech and language processing. i did dissertation on turn-taking for conversational agents which still makes me wonder if i interrupt people too often or leave a pause a little too late</p>
+                </div>
+                <span class="collapse-toggle" id="collapseBtn">tldr</span>
+            </div>
+
+            <div class="spacer"></div>
+
+            <span class="line left"><a href="mailto:elliottgruzin@gmail.com">email</a></span>
+            <span class="line center"><a href="https://linkedin.com/in/elliott-gruzin">linkedin</a></span>
+            <span class="line right"><a href="https://github.com/elliottgruzin">github</a></span>
+
+            <div class="spacer"></div>
+
+            <span class="line center">
+                <svg class="book-trigger" id="bookTrigger" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <!-- book cover -->
+                    <rect x="4" y="4" width="22" height="26" fill="#fff" stroke="#000" stroke-width="2"/>
+                    <!-- spine -->
+                    <rect x="4" y="4" width="4" height="26" fill="#000"/>
+                    <!-- pages -->
+                    <line x1="10" y1="8" x2="22" y2="8" stroke="#000" stroke-width="1"/>
+                    <line x1="10" y1="11" x2="22" y2="11" stroke="#000" stroke-width="1"/>
+                    <line x1="10" y1="14" x2="22" y2="14" stroke="#000" stroke-width="1"/>
+                    <line x1="10" y1="17" x2="18" y2="17" stroke="#000" stroke-width="1"/>
+                    <!-- page edges -->
+                    <line x1="26" y1="6" x2="26" y2="28" stroke="#000" stroke-width="2"/>
+                    <line x1="25" y1="5" x2="25" y2="29" stroke="#000" stroke-width="1"/>
+                </svg>
+            </span>
+        </div>
     </div>
+
+    <!-- Book Modal -->
+    <div class="book-modal" id="bookModal">
+        <div class="book-window">
+            <div class="book-titlebar">
+                <div class="book-close" id="bookClose"></div>
+                <span class="book-title">reading list</span>
+            </div>
+            <div class="book-content" id="bookContent">
+                <!-- populated by JS -->
+            </div>
+            <div class="book-nav">
+                <button id="bookPrev">◀</button>
+                <button id="bookNext">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const expandBtn = document.getElementById('expandBtn');
+        const collapseBtn = document.getElementById('collapseBtn');
+        const expandable = document.getElementById('expandable');
+
+        expandBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            expandable.classList.add('open');
+            expandBtn.style.display = 'none';
+        });
+
+        collapseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            expandable.classList.remove('open');
+            expandBtn.style.display = 'block';
+        });
+
+        // Reading list data - add your books here!
+        const books = [
+            {
+                title: "Legends & Lattes",
+                author: "Travis Baldree",
+                thought: "an orc opens a coffee shop and its quite cute."
+            },
+            {
+                title: "Manifold Constrained Hyper Connections",
+                author: "Z Xie et al.",
+                thought: "working on this one. new way to do residual connections to be able to maintain more information."
+            }
+        ];
+
+        let currentPage = 0;
+        const bookModal = document.getElementById('bookModal');
+        const bookContent = document.getElementById('bookContent');
+        const bookTrigger = document.getElementById('bookTrigger');
+        const bookClose = document.getElementById('bookClose');
+        const bookPrev = document.getElementById('bookPrev');
+        const bookNext = document.getElementById('bookNext');
+
+        function renderBook() {
+            const book = books[currentPage];
+            bookContent.innerHTML = `
+                <div class="book-page-num">${currentPage + 1} / ${books.length}</div>
+                <div class="book-entry-title">${book.title}</div>
+                <div class="book-entry-author">${book.author}</div>
+                <div class="book-entry-thought">${book.thought}</div>
+            `;
+            bookPrev.disabled = currentPage === 0;
+            bookNext.disabled = currentPage === books.length - 1;
+        }
+
+        bookTrigger.addEventListener('click', function() {
+            bookModal.classList.add('open');
+            renderBook();
+        });
+
+        bookClose.addEventListener('click', function() {
+            bookModal.classList.remove('open');
+        });
+
+        bookModal.addEventListener('click', function(e) {
+            if (e.target === bookModal) {
+                bookModal.classList.remove('open');
+            }
+        });
+
+        bookPrev.addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                renderBook();
+            }
+        });
+
+        bookNext.addEventListener('click', function() {
+            if (currentPage < books.length - 1) {
+                currentPage++;
+                renderBook();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!bookModal.classList.contains('open')) return;
+            if (e.key === 'Escape') bookModal.classList.remove('open');
+            if (e.key === 'ArrowLeft' && currentPage > 0) { currentPage--; renderBook(); }
+            if (e.key === 'ArrowRight' && currentPage < books.length - 1) { currentPage++; renderBook(); }
+        });
+    </script>
 </body>
 
 </html>
